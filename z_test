@@ -44,10 +44,6 @@ class Z_Test():
             sys.exit("Invalid choice of tails")
         return f"Alternate (H1)     : {self.smean} {operator} {self.pmean}"
 
-    def print_hypothesis(self):
-        print(self.state_null())
-        print(self.state_alternate())
-
     def get_crit_val(self):
         if self.tail == "T":
             p = 1 - (self.alpha / 2)
@@ -67,13 +63,6 @@ class Z_Test():
         except (ZeroDivisionError, ValueError, TypeError):
             sys.exit("Invalid sample size")
 
-    def print_scores(self):
-        if self.tail == "T":
-            print(f"Critical           : +-{self.get_crit_val()}")
-        else:
-            print(f"Critical           : {self.get_crit_val()}")
-        print(f"Z-Score            : {self.get_z_score()}")
-
     def reject_null(self):
         if self.tail == "L":
             z_or_crit = self.get_z_score() < self.get_crit_val()
@@ -85,16 +74,21 @@ class Z_Test():
         else:
             return "Not Rejected"
 
-    def print_result(self):
+    def run_test(self):
+        self.check_size()
+        print(self.state_null())
+        print(self.state_alternate())
+        if self.tail == "T":
+            print(f"Critical           : +-{self.get_crit_val()}")
+        else:
+            print(f"Critical           : {self.get_crit_val()}")
+        print(f"Z-Score            : {self.get_z_score()}")
         print(f"Null Hypothesis is : {self.reject_null()}")
 
 
 def main():
     z = Z_Test()
-    z.check_size()
-    z.print_hypothesis()
-    z.print_scores()
-    z.print_result()
+    z.run_test()
 
 
 if __name__ == "__main__":
