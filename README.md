@@ -169,7 +169,6 @@ def __init__(self):
     self.size = args["size"]
     self.alpha = args["alpha"]
     self.tail = args["tail"]
-
 ```
 
 Since all related functionality is encapsulated within the `Z_Test` class, all that is needed in `main()` for
