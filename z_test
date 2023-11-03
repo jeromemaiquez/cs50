@@ -1,0 +1,101 @@
+import argparse
+import sys
+from statistics import NormalDist
+from math import sqrt
+
+class Z_Test():
+    def __init__(self):
+        size_choices = [x / 100 for x in range(0, 100)]
+        tail_choices = ("L", "R", "T")
+        parser = argparse.ArgumentParser(description="Perform z-test")
+        parser.add_argument("-m", "--smean", type=float, required=True, help="Sample mean")
+        parser.add_argument("-p", "--pmean", type=float, required=True, help="Population mean")
+        parser.add_argument("-s", "--sigma", type=float, required=True, help="Population standard deviation")
+        parser.add_argument("-n", "--size", type=int, required=True, help="Sample size: must be >=30")
+        parser.add_argument("-a", "--alpha", default=0.05, type=float, choices=size_choices, help="Significance level")
+        parser.add_argument("-t", "--tail", default="T", type=str, choices=tail_choices, help="Left (L), right (R), or two (T) tails")
+
+        args = vars(parser.parse_args())
+
+        self.smean = args["smean"]
+        self.pmean = args["pmean"]
+        self.sigma = args["sigma"]
+        self.size = args["size"]
+        self.alpha = args["alpha"]
+        self.tail = args["tail"]
+
+    def check_size(self):
+        if self.size <= 0:
+            sys.exit("Invalid sample size")
+        elif 0 < self.size < 30:
+            sys.exit("Sample size too small")
+
+    def state_null(self):
+        return f"Null (H0)          : {self.smean} = {self.pmean}"
+
+    def state_alternate(self):
+        if self.tail == "R":
+            operator = ">"
+        elif self.tail == "L":
+            operator = "<"
+        elif self.tail == "T":
+            operator = "!="
+        else:
+            sys.exit("Invalid choice of tails")
+        return f"Alternate (H1)     : {self.smean} {operator} {self.pmean}"
+
+    def print_hypothesis(self):
+        print(self.state_null())
+        print(self.state_alternate())
+
+    def get_crit_val(self):
+        if self.tail == "T":
+            p = 1 - (self.alpha / 2)
+        elif self.tail == "R":
+            p = 1 - self.alpha
+        elif self.tail == "L":
+            p = self.alpha
+        else:
+            sys.exit("Invalid choice of tail")
+
+        return round(NormalDist().inv_cdf(p), 3)
+
+    def get_z_score(self):
+        try:
+            z = (self.smean - self.pmean) / (self.sigma / sqrt(self.size))
+            return round(z, 3)
+        except (ZeroDivisionError, ValueError, TypeError):
+            sys.exit("Invalid sample size")
+
+    def print_scores(self):
+        if self.tail == "T":
+            print(f"Critical           : +-{self.get_crit_val()}")
+        else:
+            print(f"Critical           : {self.get_crit_val()}")
+        print(f"Z-Score            : {self.get_z_score()}")
+
+    def reject_null(self):
+        if self.tail == "L":
+            z_or_crit = self.get_z_score() < self.get_crit_val()
+        else:
+            z_or_crit = self.get_z_score() > self.get_crit_val()
+
+        if z_or_crit:
+            return "Rejected"
+        else:
+            return "Not Rejected"
+
+    def print_result(self):
+        print(f"Null Hypothesis is : {self.reject_null()}")
+
+
+def main():
+    z = Z_Test()
+    z.check_size()
+    z.print_hypothesis()
+    z.print_scores()
+    z.print_result()
+
+
+if __name__ == "__main__":
+    main()
