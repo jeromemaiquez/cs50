@@ -16,7 +16,7 @@ It does this by creating a class `Z_Test` with the following **instance variable
 | Name | Flags | Description | Type | Default |
 | ---- | ----- | ----------- | ---- | ------- |
 | `alpha` | `-a` , `--alpha` | significance level | `float` | `0.05` |
-| `tail` | `-t` , `--tail` | choice of tail | `str` | `"T"` |
+| `tail` | `-t` , `--tail` | choice of tail (left `"L"`, right `"R"`, or two-tailed `"T"` ) | `str` | `"T"` |
  
 `Z_Test` also has the following **instance methods**, one for each step of the z-test process:
 
